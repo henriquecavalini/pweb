@@ -1,59 +1,158 @@
-body {margin: 1px;
+/* Reset básico para remover margens padrão e padronizar tamanhos */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
     width: 100%;
-	height: 100%;
-      }
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f4f4f9;
+}
+
 header {
     width: 100%;
-	height: 13%;
-    background-color:black;
-    color:white;
-    text-align:center;
-    padding:5px;	 
-}
-nav {
-    background-color:#eeeeee;
-    height:20px;
-    width:100%;
-    padding:5px;
+    background-color: #1a1a1a;
+    color: white;
     text-align: center;
-	word-spacing: 5.2em;
+    padding: 20px 10px;
 }
+
+nav {
+    background-color: #eeeeee;
+    width: 100%;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* Substitui a necessidade de word-spacing */
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Container principal para alinhar Section e Aside lado a lado */
+main {
+    display: flex;
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 20px;
+    gap: 20px;
+}
+
 section {
-    height:800px;
-    width:1000px;
-    float:left;
-    padding:5px;	
-    text-align:center;	
+    flex: 1;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 aside {
-    height:800px;
-    width:150px;
-    background-color:#bbbbbb;
-    float:right;
-    padding:5px;	 	 
-}
-footer {
-    width: 100%;
-	height: 12%;
-    background-color:black;
-    color:white;
-    clear:both;
-    text-align:center;
-    padding:5px;	
-	
+    width: 250px;
+    background-color: #e0e0e0;
+    padding: 20px;
+    border-radius: 8px;
 }
 
-.btn-deletar {
-    background: #c62828;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    margin-left: 8px;
-    cursor: pointer;
+footer {
+    width: 100%;
+    background-color: #1a1a1a;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: auto;
+}
+
+/* --- ESTILOS DOS FORMULÁRIOS E BOTÕES --- */
+
+fieldset {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-weight: bold;
+    padding: 0 10px;
+}
+
+form p {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+form input[type="email"],
+form input[type="password"],
+form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
     border-radius: 4px;
 }
 
+/* Estilização Geral dos Botões */
+button, input[type="reset"] {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin: 5px;
+}
+
+/* Botão Submit Padrão (Fazer Login / Cadastrar) */
+button[type="submit"] {
+    background-color: #2e7d32;
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background-color: #1b5e20;
+}
+
+/* Botão Alterar Dados */
+.btn-alterar {
+    background-color: #f57c00;
+    color: white;
+}
+
+.btn-alterar:hover {
+    background-color: #e65100;
+}
+
+/* Botão Deletar Conta */
+.btn-deletar {
+    background-color: #c62828;
+    color: white;
+}
+
 .btn-deletar:hover {
-    background: #b71c1c;
+    background-color: #b71c1c;
+}
+
+/* Botão Limpar */
+input[type="reset"] {
+    background-color: #757575;
+    color: white;
+}
+
+input[type="reset"]:hover {
+    background-color: #616161;
 }
