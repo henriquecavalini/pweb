@@ -2,300 +2,280 @@
 <html lang="pt-br">
 
 <head>
-<meta charset="utf-8">
-<link rel="stylesheet" href="estilo.css">
-
-<title>PÁGINA DE LOGIN</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="estilo.css">
+  <title>PÁGINA DE LOGIN</title>
 </head>
 
 <body>
 
-<!-- LOGIN -->
+  <!-- FORMULÁRIO DE LOGIN -->
+  <form id="formLogin">
+    <fieldset id="fie">
+      <legend>LOGIN</legend>
+      <p>
+        <label>Login (Email): </label>
+        <input type="email" id="loginEmail" required>
+      </p>
+      <p>
+        <label>SENHA :</label>
+        <input type="password" id="loginSenha" required>
+      </p>
+      <center>
+        <button type="submit">FAZER LOGIN</button>
+        <button type="button" id="btnAlterar" class="btn-alterar">ALTERAR DADOS</button>
+        <button type="button" id="btnDeletar" class="btn-deletar">DELETAR CONTA</button>
+      </center>
+    </fieldset>
+  </form>
 
-<form id="formLogin">
+  <!-- FORMULÁRIO DE CADASTRO -->
+  <form id="formCadastro">
+    <fieldset id="cad">
+      <legend>CASO NÃO TENHA LOGIN, CADASTRE-SE</legend>
+      <p>
+        <label>Nome</label>
+        <input type="text" id="cadastroNome" required>
+      </p>
+      <p>
+        <label>Email</label>
+        <input type="email" id="cadastroEmail" required>
+      </p>
+      <p>
+        <label>Senha</label>
+        <input type="password" id="cadastroSenha" required>
+      </p>
+      <center>
+        <button type="submit">CADASTRE-SE</button>
+        <input type="reset" value="Limpar">
+      </center>
+    </fieldset>
+  </form>
 
-<fieldset id="fie">
+  <script type="module">
+    // -----------------------------------------------------------------------------
+    // IMPORTAÇÕES FIREBASE E INICIALIZAÇÃO (PERSISTÊNCIA DE DADOS)
+    // -----------------------------------------------------------------------------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      deleteUser 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      updateDoc, 
+      deleteDoc, 
+      collection, 
+      query, 
+      where, 
+      getDocs 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<legend>LOGIN</legend>
+    // Configuração de conexão do Firebase
+    const firebaseConfig = { 
+      apiKey: "AIzaSyAHY77t67hJ0MQmqcSS0l17jf7RtlWXoXE", 
+      authDomain: "pweb-81a0b.firebaseapp.com", 
+      projectId: "pweb-81a0b", 
+      storageBucket: "pweb-81a0b.firebasestorage.app", 
+      messagingSenderId: "561736603002", 
+      appId: "1:561736603002:web:f7335d961c9a0ef53af2c3" 
+    };
 
-<p>
-<label>Login (Email): </label>
+    // PERSISTÊNCIA DE DADOS
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-<input type="email"
-id="loginEmail"
-required>
-</p>
+    // -----------------------------------------------------------------------------
+    // FUNÇÕES DE SANITIZAÇÃO (XSS) E VALIDAÇÃO DE DADOS
+    // -----------------------------------------------------------------------------
 
-<p>
-<label>SENHA :</label>
-
-<input type="password"
-id="loginSenha"
-required>
-</p>
-
-<center>
-
-<button type="submit">
-FAZER LOGIN
-</button>
-
-<button type="button" id="btnAlterar" class="btn-alterar">
-ALTERAR DADOS
-</button>
-
-<button type="button" id="btnDeletar" class="btn-deletar">
-DELETAR CONTA
-</button>
-
-</center>
-
-</fieldset>
-
-</form>
-
-<!-- CADASTRO -->
-
-<form id="formCadastro">
-
-<fieldset id="cad">
-
-<legend>
-CASO NÃO TENHA LOGIN, CADASTRE-SE
-</legend>
-
-<p>
-<label>Nome</label>
-
-<input type="text"
-id="cadastroNome"
-required>
-</p>
-
-<p>
-<label>Email</label>
-
-<input type="email"
-id="cadastroEmail"
-required>
-</p>
-
-<p>
-<label>Senha</label>
-
-<input type="password"
-id="cadastroSenha"
-required>
-</p>
-
-<center>
-
-<button type="submit">
-CADASTRE-SE
-</button>
-
-<input type="reset"
-value="Limpar">
-
-</center>
-
-</fieldset>
-
-</form>
-
-<script type="module">
-
-// IMPORTAÇÕES FIREBASE
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// CONFIG FIREBASE
-
-const firebaseConfig = { apiKey: "AIzaSyAHY77t67hJ0MQmqcSS0l17jf7RtlWXoXE", authDomain: "pweb-81a0b.firebaseapp.com", projectId: "pweb-81a0b", storageBucket: "pweb-81a0b.firebasestorage.app", messagingSenderId: "561736603002", appId: "1:561736603002:web:f7335d961c9a0ef53af2c3" };
-
-// INICIALIZAÇÃO (Persistência de Dados via SDK Firebase)
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// FUNÇÕES DE VALIDAÇÃO E SANITIZAÇÃO (SEGURANÇA)
-
-// Sanitização contra XSS (Remove tags ou converte caracteres especiais)
-function sanitizarEntrada(texto) {
-    if (typeof texto !== 'string') return '';
-    return texto.trim().replace(/[&<>"']/g, function (m) {
+    // SANITIZAÇÃO DE DADOS & SEGURANÇA CONTRA XSS
+    // Converte caracteres reservados em entidades HTML para impedir a injeção de scripts no navegador
+    function sanitizarEntrada(texto) {
+      if (typeof texto !== 'string') return '';
+      return texto.trim().replace(/[&<>"']/g, function (m) {
         return {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
         }[m];
-    });
-}
-
-// Validação de formato de E-mail
-function validarEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-}
-
-// Validação de tamanho da senha
-function validarSenha(senha) {
-    return senha && senha.length >= 6;
-}
-
-// CADASTRO (CREATE)
-
-document.getElementById("formCadastro").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const nomeBruto = document.getElementById("cadastroNome").value;
-  const emailBruto = document.getElementById("cadastroEmail").value;
-  const senha = document.getElementById("cadastroSenha").value;
-
-  // Sanitização e Validação dos dados
-  const nome = sanitizarEntrada(nomeBruto);
-  const email = sanitizarEntrada(emailBruto).toLowerCase();
-
-  if (!nome || nome.length < 2) {
-    alert("Por favor, insira um nome válido.");
-    return;
-  }
-
-  if (!validarEmail(email)) {
-    alert("Formato de e-mail inválido.");
-    return;
-  }
-
-  if (!validarSenha(senha)) {
-    alert("A senha deve ter pelo menos 6 caracteres.");
-    return;
-  }
-
-  try {
-    // Firebase Auth aplica Hash de Senha de forma transparente no lado do servidor
-    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
-
-    // Consulta Parametrizada / Persistência no Firestore (Doc ID atuando como condicional/WHERE)
-    await setDoc(doc(db, "usuarios", user.uid), {
-      nome: nome,
-      email: email
-    });
-
-    alert("Usuário cadastrado com sucesso!");
-  } catch (error) {
-    alert("Erro ao cadastrar: " + error.message);
-  }
-});
-
-// LOGIN (READ / AUTH)
-
-document.getElementById("formLogin").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const emailBruto = document.getElementById("loginEmail").value;
-  const senha = document.getElementById("loginSenha").value;
-
-  const email = sanitizarEntrada(emailBruto).toLowerCase();
-
-  if (!validarEmail(email)) {
-    alert("Formato de e-mail inválido.");
-    return;
-  }
-
-  try {
-    await signInWithEmailAndPassword(auth, email, senha);
-    window.location.href = "site.html";
-  } catch (error) {
-    alert("Erro no login: " + error.message);
-  }
-});
-
-// ALTERAR DADOS (UPDATE)
-
-document.getElementById("btnAlterar").addEventListener("click", async () => {
-  const emailBruto = document.getElementById("loginEmail").value;
-  const senha = document.getElementById("loginSenha").value;
-
-  const email = sanitizarEntrada(emailBruto).toLowerCase();
-
-  if (!email || !senha) {
-    alert('Preencha o email e a senha no campo de login para autenticar.');
-    return;
-  }
-
-  const novoNomeBruto = prompt("Digite o novo nome:");
-  const novoNome = sanitizarEntrada(novoNomeBruto);
-
-  if (!novoNome || novoNome.length < 2) {
-    alert("Nome inválido inserido.");
-    return;
-  }
-
-  try {
-    // Reautenticação do usuário
-    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
-
-    // Atualização usando referência direta da chave (equivalente à cláusula WHERE id = user.uid)
-    await updateDoc(doc(db, "usuarios", user.uid), {
-      nome: novoNome
-    });
-
-    alert("Dados alterados com sucesso!");
-  } catch (error) {
-    alert("Erro ao alterar dados: " + error.message);
-  }
-});
-
-// DELETAR CONTA (DELETE)
-
-document.getElementById("btnDeletar").addEventListener("click", async () => {
-  if (!confirm('Deseja realmente excluir sua conta? Isso é irreversível.')) return;
-
-  const emailBruto = document.getElementById("loginEmail").value;
-  const senha = document.getElementById("loginSenha").value;
-
-  const email = sanitizarEntrada(emailBruto).toLowerCase();
-
-  if (!email || !senha) {
-    alert('Informe o email e a senha nos campos de login para confirmar a exclusão.');
-    return;
-  }
-
-  try {
-    // Reautentica o usuário
-    await signInWithEmailAndPassword(auth, email, senha);
-
-    const user = auth.currentUser;
-    if (!user) {
-      alert('Nenhum usuário autenticado.');
-      return;
+      });
     }
 
-    // Exclusão parametrizada do documento Firestore (filtrado com a chave do documento UID)
-    try {
-      await deleteDoc(doc(db, "usuarios", user.uid));
-    } catch (err) {
-      console.warn('Erro ao apagar doc Firestore:', err.message);
+    // VALIDAÇÃO DE DADOS (E-mail)
+    function validarEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
     }
 
-    // Apaga registro do usuário no Firebase Auth
-    await deleteUser(user);
+    // VALIDAÇÃO DE DADOS (Senha)
+    function validarSenha(senha) {
+      return senha && senha.length >= 6;
+    }
 
-    alert('Conta deletada com sucesso.');
-    window.location.href = "index.html";
-  } catch (error) {
-    alert("Erro ao deletar conta: " + error.message);
-  }
-});
+    // -----------------------------------------------------------------------------
+    // OPERAÇÕES CRUD COM SEGURANÇA
+    // -----------------------------------------------------------------------------
 
-</script>
+    // 1. CREATE (CADASTRO)
+    document.getElementById("formCadastro").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nomeBruto = document.getElementById("cadastroNome").value;
+      const emailBruto = document.getElementById("cadastroEmail").value;
+      const senha = document.getElementById("cadastroSenha").value;
+
+      // Sanitização e Validação de Entradas
+      const nome = sanitizarEntrada(nomeBruto);
+      const email = sanitizarEntrada(emailBruto).toLowerCase();
+
+      if (!nome || nome.length < 2) {
+        alert("Por favor, insira um nome válido (mínimo 2 caracteres).");
+        return;
+      }
+
+      if (!validarEmail(email)) {
+        alert("Formato de e-mail inválido.");
+        return;
+      }
+
+      if (!validarSenha(senha)) {
+        alert("A senha deve ter pelo menos 6 caracteres.");
+        return;
+      }
+
+      try {
+        // SEGURANÇA: HASH DE SENHA
+        // O Firebase Auth realiza a criptografia (hash) da senha de forma segura no lado do servidor
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+
+        // CONSULTA PARAMETRIZADA & PERSISTÊNCIA
+        // O SDK trata os dados de forma isolada, prevenindo SQL Injection por design
+        await setDoc(doc(db, "usuarios", user.uid), {
+          nome: nome,
+          email: email
+        });
+
+        alert("Usuário cadastrado com sucesso!");
+      } catch (error) {
+        alert("Erro ao cadastrar: " + error.message);
+      }
+    });
+
+    // 2. READ (LOGIN)
+    document.getElementById("formLogin").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const emailBruto = document.getElementById("loginEmail").value;
+      const senha = document.getElementById("loginSenha").value;
+
+      const email = sanitizarEntrada(emailBruto).toLowerCase();
+
+      if (!validarEmail(email)) {
+        alert("Formato de e-mail inválido.");
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+
+        // DEMONSTRAÇÃO DO USO DO WHERE (Busca condicional parametrizada)
+        const q = query(collection(db, "usuarios"), where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach((documento) => {
+          console.log("Dados do usuário localizado via WHERE:", documento.data());
+        });
+
+        window.location.href = "site.html";
+      } catch (error) {
+        alert("Erro no login: " + error.message);
+      }
+    });
+
+    // 3. UPDATE (ALTERAR DADOS)
+    document.getElementById("btnAlterar").addEventListener("click", async () => {
+      const emailBruto = document.getElementById("loginEmail").value;
+      const senha = document.getElementById("loginSenha").value;
+
+      const email = sanitizarEntrada(emailBruto).toLowerCase();
+
+      if (!email || !senha) {
+        alert('Preencha o email e a senha no campo de login para autenticar.');
+        return;
+      }
+
+      const novoNomeBruto = prompt("Digite o novo nome:");
+      const novoNome = sanitizarEntrada(novoNomeBruto);
+
+      if (!novoNome || novoNome.length < 2) {
+        alert("Nome inválido inserido.");
+        return;
+      }
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+
+        // USO DO WHERE / BUSCA POR CHAVE PRIMÁRIA PARAMETRIZADA
+        // Atualiza estritamente o documento com o id referente ao usuário autenticado (WHERE id = user.uid)
+        await updateDoc(doc(db, "usuarios", user.uid), {
+          nome: novoNome
+        });
+
+        alert("Dados alterados com sucesso!");
+      } catch (error) {
+        alert("Erro ao alterar dados: " + error.message);
+      }
+    });
+
+    // 4. DELETE (DELETAR CONTA)
+    document.getElementById("btnDeletar").addEventListener("click", async () => {
+      if (!confirm('Deseja realmente excluir sua conta? Isso é irreversível.')) return;
+
+      const emailBruto = document.getElementById("loginEmail").value;
+      const senha = document.getElementById("loginSenha").value;
+
+      const email = sanitizarEntrada(emailBruto).toLowerCase();
+
+      if (!email || !senha) {
+        alert('Informe o email e a senha nos campos de login para confirmar a exclusão.');
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+
+        const user = auth.currentUser;
+        if (!user) {
+          alert('Nenhum usuário autenticado.');
+          return;
+        }
+
+        // DELETAR COM FILTRO POR ID PARAMETRIZADO
+        try {
+          await deleteDoc(doc(db, "usuarios", user.uid));
+        } catch (err) {
+          console.warn('Erro ao apagar doc Firestore:', err.message);
+        }
+
+        await deleteUser(user);
+
+        alert('Conta deletada com sucesso.');
+        window.location.href = "index.html";
+      } catch (error) {
+        alert("Erro ao deletar conta: " + error.message);
+      }
+    });
+  </script>
 
 </body>
 </html>
